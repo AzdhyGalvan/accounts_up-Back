@@ -4,7 +4,6 @@ const {signupProcess,loginProcess,logoutProcess} = require ("../controllers/auth
 
 router.post("/signup",signupProcess);
 
-//
 router.post("/login",loginProcess);
 
 router.get("/logout",logoutProcess)

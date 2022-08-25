@@ -7,10 +7,18 @@ const userSchema = new Schema(
       unique: true,
       require:true
     },
+    person:{
+      type:String,
+      enum:['Moral','Fisica'],
+      //require:true,
+     
+    },
     rfc: {
       type: String,
       unique: true,
-      require:true
+      require:true,
+      match:[/^[A-ZÑ&]{3,4}\d{6}(?:[A-Z\d]{3})?$/,"Ingresa un RFC Valido"],
+      
     },
     fiscalAdress: {
       type: String,
@@ -20,7 +28,7 @@ const userSchema = new Schema(
     email: {
       type: String,
       unique: true,
-      match: [/^\S+@\S+\.\S+$/, "Ingresa un correo valido."],
+      match:[/^\S+@\S+\.\S+$/, "Ingresa un correo valido."],
       trin: true,
     },
     role: {

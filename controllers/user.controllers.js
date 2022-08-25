@@ -23,7 +23,7 @@ exports.editProfile = (req,res,next)=>{
           }
           if (error.code === 11000) {
             return res.status(400).json({
-              errorMessage: "el correo electronico ya esta en uso.",
+              errorMessage: "el correo electronico ya esta en uso ooo."
             })
           }
           return res.status(500).json({ errorMessage: error.message });
@@ -47,7 +47,7 @@ exports.getUserById = (req,res,next) =>{
       }
       if (error.code === 11000) {
         return res.status(400).json({
-          errorMessage: "el correo electronico ya esta en uso.",
+          errorMessage: "el correo electronico ya esta en uso iiii."
         })
       }
       return res.status(500).json({ errorMessage: error.message });
@@ -69,7 +69,7 @@ exports.getUserById = (req,res,next) =>{
       }
       if (error.code === 11000) {
         return res.status(400).json({
-          errorMessage: "el correo electronico ya esta en uso.",
+          errorMessage: "el correo electronico ya esta en uso uuuu."
         })
       }
       return res.status(500).json({ errorMessage: error.message });
@@ -92,7 +92,7 @@ exports.getUserById = (req,res,next) =>{
       }
       if (error.code === 11000) {
         return res.status(400).json({
-          errorMessage: "el correo electronico ya esta en uso.",
+          errorMessage: "el correo electronico ya esta en uso aaaa."
         })
       }
       return res.status(500).json({ errorMessage: error.message });

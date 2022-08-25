@@ -3,28 +3,58 @@ const bcryptjs = require("bcryptjs");
 const mongoose = require("mongoose");
 const { clearRes, createJWT } = require("../utils/utils");
 
-
 exports.signupProcess = (req, res, next) => {
-
-  const { role, email, password, confirmPassword, razonSocial,rfc, ...restUser } = req.body;
+  const {
+    role,
+    email,
+    password,
+    confirmPassword,
+    razonSocial,
+    rfc,
+    ...restUser
+  } = req.body;
 
   //validamos campos vacios
-  if (!email.length || !password.length || !confirmPassword.length || !razonSocial.length || !rfc.length)
+  if (
+    !email.length ||
+    !password.length ||
+    !confirmPassword.length ||
+    !razonSocial.length ||
+    !rfc.length
+  )
     return res
       .status(400)
-      .json({ errorMessage: "No debes mandar campos vacios!" });
+      .json({ errorMessage: "No debes mandar campos vacios!!!" });
+
+  //validacion del rfc
+  
+  /* User.findOne({ rfc  })
+   .then((found) => {
+     if (found)
+       return res
+         .status(400)
+         .json({ errorMessage: "Este RFC ya esta registrado" })
+        })*/
+  
+  //validacion de LA RAZON SOCIAL
+  /*User.findOne({ razonSocial })
+   .then((found) => {
+     if (found)
+       return res
+         .status(400)
+         .json({ errorMessage: "Esta Razon Social ya esta registrado" })
+        })*/
 
   //validar si el password > 8 o en una regla REGEX
-  
+
   const regex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
 
   if (!regex.test(password)) {
-    return res.status(400).json( {
+    return res.status(400).json({
       errorMessage:
         "La contraeña debe contener min 8 caracteres, 1 mayuscula, 1 miniscula y 1 número.",
     });
   }
-  
 
   //password coincide!
   if (password != confirmPassword)
@@ -45,18 +75,22 @@ exports.signupProcess = (req, res, next) => {
           .genSalt(10)
           .then((salt) => bcryptjs.hash(password, salt))
           .then((hashedPassword) => {
-            //crearemos al nuevo usuario
-            return User.create({
-              email,
-              password: hashedPassword,
-              ...restUser,
-            });
+            return User.create(
+              {
+                email,
+                password: hashedPassword,
+                rfc,
+                razonSocial,
+                ...restUser,
+              },console.log("que es el rest",email,password,rfc,razonSocial,{restUser}));
           })
           //then contiene al user ya con password hashed y guardar en la db
           .then((user) => {
+            console.log("que es el user",user)
             //regresamos al usuario para que entre a la pagina y ademas creamos su token de acceso
             const [header, payload, signature] = createJWT(user);
-            
+            //vamos a guardar esos datos en las cookies
+            //res.cookie("key_como_se_va_guardar","dato_que_voy_almacenar",{opciones})
             res.cookie("headload", `${header}.${payload}`, {
               maxAge: 1000 * 60 * 30,
               httpOnly: true,
@@ -70,10 +104,9 @@ exports.signupProcess = (req, res, next) => {
               secure: false,
             });
 
-           
             //vamos a limpiar la respuesta de mongoose CONVIERTIENDO el BSOn a objeto y eliminar data basura
             const newUser = clearRes(user.toObject());
-            res.status(201).json({ user: newUser }); 
+            res.status(201).json({ user: newUser });
           })
       );
     })
@@ -83,7 +116,7 @@ exports.signupProcess = (req, res, next) => {
       }
       if (error.code === 11000) {
         return res.status(400).json({
-          errorMessage: "el correo electronico ya esta en uso.",
+          errorMessage: "el error es otro",
         });
       }
       return res.status(500).json({ errorMessage: error.message });
@@ -103,9 +136,8 @@ exports.loginProcess = (req, res, next) => {
   const regex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
 
   if (!regex.test(password)) {
-    return res.status(400).json( {
-      errorMessage:
-        "La contraeña debe contener min 8 caracteres, 1 mayuscula, 1 miniscula y 1 número.",
+    return res.status(400).json({
+      errorMessage: "Datos incorrectos,revisa tu correo y contraseña",
     });
   }
 
@@ -150,16 +182,15 @@ exports.loginProcess = (req, res, next) => {
       }
       if (error.code === 11000) {
         return res.status(400).json({
-          errorMessage: "el correo electronico ya esta en uso.",
+          errorMessage: "el segundo error",
         });
       }
       return res.status(500).json({ errorMessage: error.message });
     });
 };
 
-
-exports.logoutProcess= (req,res,next)=>{
-    res.clearCookie("headload")
-    res.clearCookie("signature")
-    res.status(200).json({successMessage:"Bye,Te esperamos pronto :D"})
-}
+exports.logoutProcess = (req, res, next) => {
+  res.clearCookie("headload");
+  res.clearCookie("signature");
+  res.status(200).json({ successMessage: "Bye,Te esperamos pronto :D" });
+};
