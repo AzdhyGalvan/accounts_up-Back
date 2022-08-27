@@ -16,7 +16,7 @@ exports.createCost = (req,res,next) =>{
         }
         if (error.code === 11000) {
           return res.status(400).json({
-            errorMessage: "el segundo error",
+            errorMessage: "Error al crear un costo",
           });
         }
         return res.status(500).json({ errorMessage: error.message });
@@ -40,7 +40,7 @@ exports.editCost = (req,res,next) =>{
       }
       if (error.code === 11000) {
         return res.status(400).json({
-          errorMessage: "el correo electronico ya esta en uso ooo."
+          errorMessage: "Error al editar un costo"
         })
       }
       return res.status(500).json({ errorMessage: error.message });
@@ -54,6 +54,6 @@ exports.deleteCost = (req,res,next)=>{
 
   Cost.findByIdAndDelete(_id)
   .then(()=>{
-    res.status(200).json({sucessMesage:`El resgistro ${_id} ha sido removido`})
+    res.status(200).json({successMessage:`El costo con registro ${_id} ha sido removido`})
   })
 }

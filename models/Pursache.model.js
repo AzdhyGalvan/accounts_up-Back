@@ -22,7 +22,7 @@ phone:{
     require:false,
     default:0
 },
-another:{
+another:{ //como hacer una lista como de 10 cosas mas
     type:Number,
     require:false,
     default:0
