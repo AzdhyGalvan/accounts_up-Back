@@ -22,11 +22,14 @@ phone:{
     require:false,
     default:0
 },
-another:{ //como hacer una lista como de 10 cosas mas
-    type:Number,
+another:{
+    type:Array,
     require:false,
     default:0
 }
+
+
+
 
 },{
     timestamps: true,

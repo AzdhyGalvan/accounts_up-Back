@@ -3,94 +3,55 @@ const bcryptjs = require("bcryptjs");
 const mongoose = require("mongoose");
 const { clearRes, createJWT } = require("../utils/utils");
 
-exports.signupProcess = (req, res, next) => {
-  const {
-    role,
-    email,
-    password,
-    confirmPassword,
-    razonSocial,
-    rfc,
-    ...restUser
-  } = req.body;
+exports.signupProcess = async (req, res, next) => {
+  const {role,email,password,confirmPassword,razonSocial,rfc,person,...restUser} = req.body;
 
-  //validamos campos vacios
-  if (
-    !email.length ||
-    !password.length ||
-    !confirmPassword.length ||
-    !razonSocial.length ||
-    !rfc.length
-  )
-    return res
-      .status(400)
-      .json({ errorMessage: "No debes mandar campos vacios!!!" });
+  try{
+    //validamos campos vacios
+  if (!email.length ||!password.length ||!confirmPassword.length ||!razonSocial.length ||!rfc.length ||!person.length)
+  return res
+    .status(400).json({ errorMessage: "No debes mandar campos vacios!!!" });
+
+
+//validar si el password > 8 o en una regla REGEX
+
+const regex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
+if (!regex.test(password)) {
+  return res.status(400).json({
+    errorMessage:
+      "La contraeña debe contener min 8 caracteres, 1 mayuscula, 1 miniscula y 1 número.",
+  });
+}
+
+//password coincide!
+if (password != confirmPassword)
+  return res
+    .status(400)
+    .json({ errorMessage: "Las contraseñas no son iguales" });
+  
+  
 
   //validacion del rfc
-  
-  /* User.findOne({ rfc  })
-   .then((found) => {
-     if (found)
-       return res
-         .status(400)
-         .json({ errorMessage: "Este RFC ya esta registrado" })
-        })*/
-  
+ const foundRFC = await User.findOne({ rfc  })
+if (foundRFC) return res.status(400).json({ errorMessage: "Este RFC ya esta registrado" })
+
   //validacion de LA RAZON SOCIAL
-  /*User.findOne({ razonSocial })
-   .then((found) => {
-     if (found)
-       return res
-         .status(400)
-         .json({ errorMessage: "Esta Razon Social ya esta registrado" })
-        })*/
-
-  //validar si el password > 8 o en una regla REGEX
-
-  const regex = /(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}/;
-
-  if (!regex.test(password)) {
-    return res.status(400).json({
-      errorMessage:
-        "La contraeña debe contener min 8 caracteres, 1 mayuscula, 1 miniscula y 1 número.",
-    });
-  }
-
-  //password coincide!
-  if (password != confirmPassword)
-    return res
-      .status(400)
-      .json({ errorMessage: "La contraseña no son iguales" });
+const foundRS = await  User.findOne({ razonSocial })
+if (foundRS)return res.status(400).json({ errorMessage: "Esta Razon Social ya esta registrado" })
 
   //validacion del email
-  User.findOne({ email })
-    .then((found) => {
-      if (found)
-        return res
-          .status(400)
-          .json({ errorMessage: "Ese correo ya fue  registrado" });
+  const foundEmail= await User.findOne({ email })
+  if (foundEmail)return res.status(400).json({ errorMessage: "Ese correo ya fue  registrado" });
 
-      return (
-        bcryptjs
-          .genSalt(10)
-          .then((salt) => bcryptjs.hash(password, salt))
-          .then((hashedPassword) => {
-            return User.create(
-              {
-                email,
-                password: hashedPassword,
-                rfc,
-                razonSocial,
-                ...restUser,
-              },console.log("que es el rest",email,password,rfc,razonSocial,{restUser}));
-          })
-          //then contiene al user ya con password hashed y guardar en la db
-          .then((user) => {
-            console.log("que es el user",user)
-            //regresamos al usuario para que entre a la pagina y ademas creamos su token de acceso
-            const [header, payload, signature] = createJWT(user);
-            //vamos a guardar esos datos en las cookies
-            //res.cookie("key_como_se_va_guardar","dato_que_voy_almacenar",{opciones})
+
+const salt = bcryptjs.genSaltSync(10);
+const hashedPassword = bcryptjs.hashSync(password,salt);
+
+       
+   const user= await User.create ({email,password: hashedPassword,rfc,razonSocial,person,...restUser,})
+              
+         const [header, payload, signature] = createJWT(user);
+            
             res.cookie("headload", `${header}.${payload}`, {
               maxAge: 1000 * 60 * 30,
               httpOnly: true,
@@ -106,22 +67,16 @@ exports.signupProcess = (req, res, next) => {
 
             //vamos a limpiar la respuesta de mongoose CONVIERTIENDO el BSOn a objeto y eliminar data basura
             const newUser = clearRes(user.toObject());
-            res.status(201).json({ user: newUser });
-          })
-      );
-    })
-    .catch((error) => {
-      if (error instanceof mongoose.Error.ValidationError) {
-        return res.status(400).json({ errorMessage: error.message });
-      }
-      if (error.code === 11000) {
-        return res.status(400).json({
-          errorMessage: "el error es otro",
-        });
-      }
-      return res.status(500).json({ errorMessage: error.message });
-    });
-};
+            res.status(201).json({ user: newUser });  
+}catch(error){
+
+  if (error instanceof mongoose.Error.ValidationError) return res.status(400).json({ errorMessage: error.message });
+  
+  if (error.code === 11000) return res.status(400).json({ errorMessage: "El correo electronico ya esta en uso"});
+  
+  return res.status(500).json({ errorMessage: error.message });
+}
+}
 
 exports.loginProcess = (req, res, next) => {
   const { email, password } = req.body;

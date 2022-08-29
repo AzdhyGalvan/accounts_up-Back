@@ -8,7 +8,7 @@ exports.getLoggedUser = (req,res,next)=>{
 }
 
 exports.editProfile = (req,res,next)=>{
-    const {role,password, ...restUser} = req.body
+    const {role,password,rfc,razonSocial,person,email, ...restUser} = req.body
     //voy a destructurar del req.user ={_id}
     const {_id} = req.user
     User.findByIdAndUpdate(_id, {...restUser},{new:true})

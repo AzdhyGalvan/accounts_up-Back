@@ -10,7 +10,7 @@ const userSchema = new Schema(
     person:{
       type:String,
       enum:['Moral','Fisica'],
-      //require:true,
+      require:true,
      
     },
     rfc: {
