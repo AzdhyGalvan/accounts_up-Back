@@ -5,9 +5,10 @@ const mongoose = require ('mongoose');
 
 exports.createPursache = (req,res,next)=>{
 
-    const {payroll,taxes,ligth,phone,another} = req.body
+    const {month,year,payroll,taxes,ligth,phone,another} = req.body
+    const {_id:_owner} = req.user //_owner => al _id del usuario
 
-    Pursache.create({payroll,taxes,ligth,phone,another})
+    Pursache.create({_owner,month,year,payroll,taxes,ligth,phone,another})
     .then(pursache =>{
         res.status(201).json({pursache})
     })
@@ -27,7 +28,7 @@ exports.createPursache = (req,res,next)=>{
 exports.editPursache = (req,res,next)=>{
 
 const {_id} = req.params
- Pursache.findByIdAndUpdate(_id,{...req.body},{new:true})
+ Pursache.findOneAndUpdate({_id,_owner:req.user._id},{...req.body},{new:true})
 .then(pursache=>{
     res.status(200).json(pursache)
 })
@@ -49,7 +50,7 @@ exports.deletePursache = (req,res,next) =>{
 
     const {_id} = req.params
 
-    Pursache.findByIdAndDelete(_id)
+    Pursache.findByIdAndDelete({_id,owner:req.user._id})
     .then(()=>{
         res.status(200).json({successMesage:`El gasto con referencia ${_id} ha sido removido`})
     })

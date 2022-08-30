@@ -145,7 +145,9 @@ exports.loginProcess = (req, res, next) => {
 };
 
 exports.logoutProcess = (req, res, next) => {
+const {email, ...restUser}= req.body
+
   res.clearCookie("headload");
   res.clearCookie("signature");
-  res.status(200).json({ successMessage: "Bye,Te esperamos pronto :D" });
+  res.status(200).json({ successMessage: `Bye ${email},Te esperamos pronto :D` });
 };

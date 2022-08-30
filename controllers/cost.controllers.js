@@ -4,8 +4,10 @@ const mongoose = require('mongoose')
 
 exports.createCost = (req,res,next) =>{
     const {month,year,supplier, amount}= req.body
+    const {_id:_owner} = req.user //_owner => al _id del usuario
 
-    Cost.create({month,year,supplier, amount})
+
+    Cost.create({_owner,month,year,supplier, amount}) 
     .then(costs=>{
         res.status(201).json({ costs });
         console.log("que es mi cost",costs)
@@ -28,7 +30,9 @@ exports.editCost = (req,res,next) =>{
 
   const {_id} =req.params
 
-  Cost.findByIdAndUpdate(_id,{...req.body},{new:true})
+  Cost.findOneAndUpdate({_id,_owner:req.user._id},{...req.body},{new:true})
+  
+  //Cost.findByIdAndUpdate(_id,{...req.body},{new:true})
   .then(cost=>{
         res.status(200).json(cost)
        
@@ -52,7 +56,7 @@ exports.deleteCost = (req,res,next)=>{
 
   const {_id} = req.params
 
-  Cost.findByIdAndDelete(_id)
+  Cost.findByIdAndDelete({_id,owner:req.user._id})
   .then(()=>{
     res.status(200).json({successMessage:`El costo con registro ${_id} ha sido removido`})
   })

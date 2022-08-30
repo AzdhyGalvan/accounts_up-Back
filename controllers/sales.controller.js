@@ -6,8 +6,9 @@ const Cost = require('../models/Costs.model');
 exports.createSale = (req,res,next)=>{
 
 const {month,year,client,amount} = req.body
+const {_id:_owner} = req.user //_owner => al _id del usuario
 
-Sale.create({month,year,client,amount})
+Sale.create({_owner,month,year,client,amount})
 .then(sales =>{
     res.status(201).json({sales});
 })
@@ -28,7 +29,7 @@ Sale.create({month,year,client,amount})
 exports.editSale = (req,res,next)=>{
 const {_id} = req.params
 
-Sale.findByIdAndUpdate(_id,{...req.body},{new:true})
+Sale.findOneAndUpdate({_id,_owner:req.user._id},{...req.body},{new:true})
 .then (sale=>{
     res.status(200).json(sale)
 })
@@ -51,7 +52,7 @@ exports.deleteSale = (req,res,next) =>{
 
     const {_id} = req.params
 
-    Cost.findByIdAndDelete(_id)
+    Cost.findByIdAndDelete({_id,_owner:req.user._id})
     .then(()=>{
         res.status(200).json({successMessage:` La venta con resgistro ${_id} ha sido removida`})
     })

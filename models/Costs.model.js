@@ -22,6 +22,13 @@ const costSchema = new Schema(
       require: true,
      
     },
+    
+      _owner:{
+        type:Schema.Types.ObjectId,
+        ref:"User",
+        require:true
+      
+    }
   },
   {
     
