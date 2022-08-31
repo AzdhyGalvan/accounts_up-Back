@@ -34,20 +34,24 @@ Costs.find({month,_owner:req.user._id},{amount:1})
 }
 
 exports.allPursaches = (req,res,next) =>{
+    
     const {month,another} = req.body
 const {_id:_owner} = req.body
 //const arryAnother = another.reduce()
-console.log("que es mi array Another",[another])
+console.log("que es mi array Another", another)
+
 
 Pursaches.find({month,_owner:req.user._id},{_id:0})
 .then(months=>{
-
+   
     const sumaPay = months.map(item => item.payroll).reduce((prev, curr) => prev + curr, 0);
     console.log(sumaPay);
     const sumaTaxes = months.map(item => item.taxes).reduce((prev, curr) => prev + curr, 0);
     console.log(sumaTaxes);
     const sumaLigth = months.map(item => item.ligth).reduce((prev, curr) => prev + curr, 0);
     console.log(sumaLigth);
+
+   
 
 
     
@@ -57,6 +61,6 @@ Pursaches.find({month,_owner:req.user._id},{_id:0})
 
 
         console.log("que es mi months",months)
-        res.status(200).json({succesMessage:` El en mes de ${month} el total de gastos son ${totalMonth}`})//[mounts]
+        res.status(200).json({succesMessage:` El en mes de ${month} ${another} el total de gastos son ${totalMonth}`})//[mounts]
     })
 }
