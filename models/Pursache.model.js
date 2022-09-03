@@ -33,11 +33,13 @@ phone:{
     require:false,
     default:0
 },
-another:{
-    type:Array,
-    require:false,
-    default:0
-},
+another:[
+    {
+        concepto:String,
+        amount:Number
+    }
+],
+  
 _owner:{
     type:Schema.Types.ObjectId,
     ref:"User",
@@ -50,6 +52,7 @@ _owner:{
 
 },{
     timestamps: true,
+    strict:false
 })
 
 const Pursache = model("Pursache", pursacheModel);

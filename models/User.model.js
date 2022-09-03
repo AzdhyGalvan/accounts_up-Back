@@ -5,7 +5,8 @@ const userSchema = new Schema(
     razonSocial: {
       type: String,
       unique: true,
-      require:true
+      require:true,
+      
     },
     person:{
       type:String,
@@ -17,6 +18,7 @@ const userSchema = new Schema(
       type: String,
       unique: true,
       require:true,
+      uppercase:true,
       match:[/^[A-ZÑ&]{3,4}\d{6}(?:[A-Z\d]{3})?$/,"Ingresa un RFC Valido"],
       
     },
