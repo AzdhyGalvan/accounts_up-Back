@@ -1,22 +1,36 @@
 const { Schema, model } = require("mongoose");
 
-// TODO: Please make sure you edit the user model to whatever makes sense in this case
 const userSchema = new Schema(
   {
-    RazonSocial: {
+    razonSocial: {
       type: String,
       unique: true,
-      require:true
+      require:true,
+      
     },
-    RFC: {
+    person:{
+      type:String,
+      enum:['Moral','Fisica'],
+      require:true,
+     
+    },
+    rfc: {
       type: String,
       unique: true,
-      require:true
+      require:true,
+      uppercase:true,
+      match:[/^[A-ZÑ&]{3,4}\d{6}(?:[A-Z\d]{3})?$/,"Ingresa un RFC Valido"],
+      
+    },
+    fiscalAdress: {
+      type: String,
+      unique: true,
+      require:false
     },
     email: {
       type: String,
       unique: true,
-      match: [/^\S+@\S+\.\S+$/, "Ingresa un correo valido."],
+      match:[/^\S+@\S+\.\S+$/, "Ingresa un correo valido."],
       trin: true,
     },
     role: {
