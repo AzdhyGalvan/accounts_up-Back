@@ -52,7 +52,7 @@ exports.deleteSale = (req,res,next) =>{
 
     const {_id} = req.params
 
-    Cost.findByIdAndDelete({_id,_owner:req.user._id})
+   Sale.findOneAndDelete({_id,_owner:req.user._id})
     .then(()=>{
         res.status(200).json({successMessage:` La venta con resgistro ${_id} ha sido removida`})
     })
