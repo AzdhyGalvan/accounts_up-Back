@@ -29,7 +29,7 @@ Sale.create({_owner,month,year,client,amount})
 exports.editSale = (req,res,next)=>{
 const {_id} = req.params
 
-Sale.findOneAndUpdate({_id,_owner:req.user._id},{...req.body},{new:true})
+Sale.findByIdAndUpdate({_id,_owner:req.user._id},{...req.body},{new:true})
 .then (sale=>{
     res.status(200).json(sale)
 })

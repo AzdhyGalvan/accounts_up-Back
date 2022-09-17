@@ -41,7 +41,7 @@ const {_id:_owner} = req.body
 
 
 
-Pursaches.find({month,_owner:req.user._id},{_id:0})
+Pursaches.find({month,_owner:req.user._id})
 .then(months=>{
     //const newMonth=months.toObject()
     
